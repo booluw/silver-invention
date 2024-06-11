@@ -59,7 +59,7 @@ const signUserOut = async function () {
           :key="index"
         >
           <component :is="link.icon" class="w-[24px]" />
-          {{ link.title }}
+          <span class="hidden md:block">{{ link.title }}</span>
         </router-link>
       </div>
     </div>
@@ -67,7 +67,7 @@ const signUserOut = async function () {
       <header
         class="p-5 bg-gray-800 sticky top-0 z-10 flex items-center justify-between text-white"
       >
-        <h1 class="">
+        <h1 class="text-xs">
           Welcome, <b>{{ user.fullname! ?? user.email! }}</b>
         </h1>
         <Button
