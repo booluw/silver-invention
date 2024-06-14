@@ -8,6 +8,8 @@ import AppModal from '@/components/AppModal.vue'
 import CarWashIcon from "./components/CarWash.vue"
 import OneTimeWashModal from './components/OneTimeWashModal.vue'
 import NewSubscriberModal from './components/NewSubscriberModal.vue'
+import ExistingSubscriberModal from './components/ExistingSubscriberModal.vue'
+
 import RecieptModal from './components/RecieptModal.vue'
 
 const router = useRouter()
@@ -56,6 +58,12 @@ const route = useRoute()
       @done="router.push(route.path)"
       @close="router.push(route.path)"
       v-if="route.query.action === 'add-new-subscriber'"
+    />
+    <AppModal
+      :child="ExistingSubscriberModal"
+      @done="router.push(route.path)"
+      @close="router.push(route.path)"
+      v-if="route.query.action === 'existing-subscriber'"
     />
     <AppModal
       :child="RecieptModal"

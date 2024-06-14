@@ -19,7 +19,9 @@ const printReciept = async function () {
   var mywindow = window.open('', 'PRINT', 'height=400,width=600')
 
   mywindow.document.write('<html><head><title>' + document.title + '</title>')
-  mywindow.document.write('<style>@page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>')
+  mywindow.document.write(
+    '<style>@page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
+  )
   mywindow.document.write('</head><body>')
   mywindow.document.write(document.getElementById('section-to-print').innerHTML)
   mywindow.document.write('</body></html>')
@@ -41,14 +43,25 @@ const loadReciept = async function () {
   loading.value = true
 
   try {
-    const { data, error } = await supabase
-      .from(`${route.query.type}`)
-      .select('*, package(*)')
-      .eq('id', route.query.id)
+    if (route.query.type === 'one-time-wash') {
+      const { data, error } = await supabase
+        .from('one-time-wash')
+        .select('*, package(*)')
+        .eq('id', route.query.id)
 
-    if (error) throw error
+      if (error) throw error
 
-    reciept.value = data[0]
+      reciept.value = data[0]
+    } else {
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('*, package(*)')
+        .eq('email', route.query.id)
+
+      if (error) throw error
+
+      reciept.value = data[0]
+    }
 
     loading.value = false
   } catch (err) {
@@ -108,21 +121,26 @@ onMounted(async () => await loadReciept())
       </svg>
     </div>
     <div class="h-full" id="section-to-print" v-else>
-      <div style="text-align: center;">
-        <img src="@/assets/imgs/logo.jpg" width="100px" style="margin: 0 auto" />
+      <div style="text-align: center">
+        <img src="@/assets/imgs/logo.jpg" width="100px" style="margin: 0 auto; border-radius: 5px;" />
         <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
           <p>0811-845-2796</p>
         </div>
-        <div style="display: flex; justify-content: space-between; margin: 15px 0 0; font-size: 12px">
-          <div>INVOICE: OTW{{ reciept.id! }}</div>
-          <div>Processed: {{ formatDate(reciept.created_at) }}</div>
+        <div
+          style="display: flex; justify-content: space-between; margin: 15px 0 0; font-size: 12px"
+        >
+          <div v-if="route.query.type === 'one-time-wash'">INVOICE: OTW{{ reciept.id! }}</div>
+          <div>
+            {{ route.query.type === 'one-time-wash' ? 'Processed' : 'Subscription started' }}:
+            {{ route.query.type === 'one-time-wash' ? formatDate(reciept.created_at) : formatDate(reciept.subscription_started) }}
+          </div>
           <div>Printed: {{ formatDate(Date()) }}</div>
         </div>
       </div>
-      <table style="width: 100%; margin: 20px 0 0">
-        <tr style="border-bottom: 1px #eee solid;">
+      <table style="width: 100%; margin: 20px 0 0" v-if="route.query.type === 'one-time-wash'">
+        <tr style="border-bottom: 1px #eee solid">
           <th>Cars</th>
           <th>Description</th>
           <th>Price</th>
@@ -136,14 +154,23 @@ onMounted(async () => await loadReciept())
             {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
           </td>
         </tr>
-        <tr style="border-top: 1px grey solid;">
+        <tr style="border-top: 1px grey solid">
           <td></td>
           <td></td>
           <td style="text-align: center">Total</td>
           <td style="text-align: center; font-weight: bold">
-            {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}</td>
+            {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
+          </td>
         </tr>
       </table>
+      <div v-else>
+        <b>Subscription package:</b> {{ reciept.package.package_name }}
+        <br />
+        <b>Duration:</b> {{ reciept.duration }} months
+        <br />
+        <b>Wash Left:</b> {{ reciept.wash_left }}
+        <br /><br />
+      </div>
       <hr />
       <br /><br />
       <p>THANK YOU FOR YOUR PATRONAGE</p>

@@ -59,7 +59,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 <template>
   <main class="flex items-center justify-center h-screen bg">
     <div class="md:w-1/3 md:min-h-2/3 rounded-lg border border-white/40 py-5 px-10 shadow-xl bg-white">
-      <img src="@/assets/imgs/logowitnobg.png" class="w-[150px] block my-0 mx-auto" />
+      <img src="@/assets/imgs/logo.jpg" class="w-[150px] block my-0 mx-auto rounded-xl" />
       <h1 class="mb-5 text-3xl">Log In</h1>
       <form @submit="onSubmit">
         <FormField v-slot="{ componentField }" name="email">

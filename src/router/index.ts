@@ -35,8 +35,9 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'Dashboard',
-          component: () => import('../views/dashboard/IndexView.vue')
+          redirect: { name: 'Services' }
+          // name: 'Dashboard',
+          // component: () => import('../views/dashboard/IndexView.vue')
         },
         {
           path: 'services',
