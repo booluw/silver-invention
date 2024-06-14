@@ -66,14 +66,14 @@ const onSubmit = form.handleSubmit(async (values) => {
   try {
     const { error } = await supabase.from('subscribers').insert({
       ...values,
-      wash_left: amount[0].number_of_wash * values.duration,
-      subscription_started: new Date()
+      wash_left: [3, 4].includes(values.package) ? amount[0].number_of_wash * values.duration : amount[0].number_of_wash,
+      subscription_end: new Date(new Date().setDate(new Date().getDate() + (31 * values.duration )))
     })
 
     if (error) throw error
 
     toast('New Subscriber Added', { description: '' })
-    emit('done')
+    router.push(`?action=reciept&id=${values.email}&type=existing-subscriber`)
   } catch (error) {
     console.log(error)
     toaster({

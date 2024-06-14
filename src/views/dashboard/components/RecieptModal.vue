@@ -133,8 +133,8 @@ onMounted(async () => await loadReciept())
         >
           <div v-if="route.query.type === 'one-time-wash'">INVOICE: OTW{{ reciept.id! }}</div>
           <div>
-            {{ route.query.type === 'one-time-wash' ? 'Processed' : 'Subscription started' }}:
-            {{ route.query.type === 'one-time-wash' ? formatDate(reciept.created_at) : formatDate(reciept.subscription_started) }}
+            {{ route.query.type === 'one-time-wash' ? 'Processed' : 'Subscription ends' }}:
+            {{ route.query.type === 'one-time-wash' ? formatDate(reciept.created_at) : formatDate(reciept.subscription_end) }}
           </div>
           <div>Printed: {{ formatDate(Date()) }}</div>
         </div>

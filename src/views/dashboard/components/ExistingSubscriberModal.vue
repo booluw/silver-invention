@@ -146,8 +146,8 @@ const updateWash = async function (email: string) {
         </div>
 
         <div class="">
-          <h1 class="font-semibold">Subscription Started</h1>
-          {{ formatDate(subscriber.subscription_started) }}
+          <h1 class="font-semibold">Subscription Ends</h1>
+          {{ formatDate(subscriber.subscription_end) }}
         </div>
       </div>
 
@@ -173,7 +173,7 @@ const updateWash = async function (email: string) {
             clip-rule="evenodd"
           ></path>
         </svg>
-        {{ loading ? 'Please Wait...' : 'Show Wash Reciept' }}
+        {{ loading ? 'Please Wait...' : 'Record New Wash' }}
       </Button>
     </div>
   </section>
