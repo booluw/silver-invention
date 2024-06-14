@@ -109,16 +109,16 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center;">
-        <img src="@/assets/imgs/logowitnobg.png" width="100px" style="margin: 0 auto" />
+        <img src="@/assets/imgs/logo.jpg" width="100px" style="margin: 0 auto" />
         <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
-          <p>No. 23, Big Head Rd, Artillery - London</p>
+          <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
           <p>0811-845-2796</p>
         </div>
         <div style="display: flex; justify-content: space-between; margin: 15px 0 0; font-size: 12px">
-          <div style="opacity: .75">INVOICE: OTW{{ reciept.id! }}</div>
-          <div style="opacity: .75">Processed: {{ formatDate(reciept.created_at) }}</div>
-          <div style="opacity: .75">Printed: {{ formatDate(Date()) }}</div>
+          <div>INVOICE: OTW{{ reciept.id! }}</div>
+          <div>Processed: {{ formatDate(reciept.created_at) }}</div>
+          <div>Printed: {{ formatDate(Date()) }}</div>
         </div>
       </div>
       <table style="width: 100%; margin: 20px 0 0">

@@ -22,7 +22,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast/use-toast'
 
-
 const router = useRouter()
 
 const emit = defineEmits(['done', 'close'])
@@ -35,8 +34,10 @@ const formSchema = toTypedSchema(
   z.object({
     email: z.string().min(2).max(50).email('Please provide a valid email'),
     plate_number: z.string().min(3),
+    number_of_cars: z.number(),
     package: z.number(),
-    customer_name: z.string()
+    customer_name: z.string(),
+    duration: z.number()
   })
 )
 
@@ -50,39 +51,42 @@ const formatCash = (money) => {
 
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
-  const amount = packages.value.filter(item => {
+  const amount = packages.value.filter((item) => {
     if (item.id === values.package) return item
   })
 
-  toast('Add New One Time Wash',
-    {
-      description: `Add ${values.number_of_cars} cars for ${formatCash(values.number_of_cars*amount[0].amount)}`,
-      action: {
-        label: 'Continue',
-        onClick: () => addNewWash(values)
-      },
-      duration: 99999,
-      onDismiss: () => {
-        loading.value = false
-      }
+  if (values.number_of_cars > amount[0].max_number_of_cars) {
+    toast('Number of cars exceeded for this package', {
+      description: `${amount[0].package_name} allows only ${amount[0].max_number_of_cars}`
     })
-})
-
-const addNewWash = async function (values) {
-  loading.value = true
+    loading.value = false
+    return
+  }
 
   try {
-    const { data, error } = await supabase.from('one-time-wash').insert({ ...values }).select('*')
+    const { error } = await supabase.from('subscribers').insert({
+      ...values,
+      wash_left: amount[0].number_of_wash * values.duration,
+      subscription_started: new Date()
+    })
 
     if (error) throw error
 
-    router.push(`?action=reciept&id=${data[0].id}&type=one-time-wash`)
-  } catch(error) {
+    toast('New Subscriber Added', { description: '' })
+    emit('done')
+  } catch (error) {
     console.log(error)
+    toaster({
+      description:
+        error.message === 'duplicate key value violates unique constraint "customers_email_key"'
+          ? 'This user already has a subscription'
+          : error.message,
+      variant: 'destructive'
+    })
   }
 
   loading.value = false
-}
+})
 
 const fetchPackages = async function () {
   packageLoading.value = true
@@ -91,7 +95,6 @@ const fetchPackages = async function () {
 
     if (error) throw error
     packages.value = data
-
   } catch (error) {
     console.log(error)
     toaster({
@@ -107,14 +110,13 @@ const fetchPackages = async function () {
   packageLoading.value = false
 }
 
-
 onMounted(async () => {
   await fetchPackages()
 })
 </script>
 <template>
   <section class="">
-    <h2 class="text-2xl">One Time Wash</h2>
+    <h2 class="text-2xl">New Subscriber</h2>
     <form @submit="onSubmit" class="mt-3">
       <FormField v-slot="{ componentField }" name="customer_name">
         <FormItem>
@@ -140,41 +142,84 @@ onMounted(async () => {
           <FormMessage />
         </FormItem>
       </FormField>
-      <FormField v-slot="{ componentField }" name="plate_number">
-        <FormItem>
-          <FormLabel>Plate Number</FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              placeholder="Plate Number"
-              v-bind="componentField"
-              class="text-black"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-      <FormField v-slot="{ componentField }" name="package">
-        <FormItem>
-          <FormLabel>Package</FormLabel>
-          <FormControl>
-            <Select v-bind="componentField" class="text-black" :disabled="packageLoading">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="Select a Package" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Packages</SelectLabel>
-                  <SelectItem :value="plan.id" v-for="(plan, index) in packages" :key="index">
-                    {{ plan.package_name }} - {{ formatCash(plan.amount) }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <FormField v-slot="{ componentField }" name="package">
+          <FormItem>
+            <FormLabel>Package</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField" class="text-black" :disabled="packageLoading">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select a Package" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Packages</SelectLabel>
+                    <SelectItem :value="plan.id" v-for="(plan, index) in packages" :key="index">
+                      {{ plan.package_name }} - {{ formatCash(plan.amount) }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="duration">
+          <FormItem>
+            <FormLabel>Duration</FormLabel>
+            <FormControl>
+              <Select v-bind="componentField" class="text-black">
+                <SelectTrigger class="w-full">
+                  <SelectValue placeholder="Select Duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem :value="1"> 1 Month </SelectItem>
+                    <SelectItem :value="3"> 3 Months </SelectItem>
+                    <SelectItem :value="6"> 6 Months </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormField v-slot="{ componentField }" name="plate_number">
+          <FormItem>
+            <FormLabel>Plate Number</FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="Plate Number"
+                v-bind="componentField"
+                class="text-black"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="number_of_cars">
+          <FormItem>
+            <FormLabel>Number of Cars</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                placeholder="Number of Cars"
+                v-bind="componentField"
+                class="text-black"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+
       <Button type="submit" class="w-full mt-5" :disabled="loading">
         <svg
           v-if="loading"
@@ -192,7 +237,7 @@ onMounted(async () => {
             clip-rule="evenodd"
           ></path>
         </svg>
-        {{ loading ? 'Please Wait...' : 'Add One Time Wash' }}
+        {{ loading ? 'Please Wait...' : 'Add New Subscriber' }}
       </Button>
     </form>
   </section>
