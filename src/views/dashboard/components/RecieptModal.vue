@@ -19,7 +19,7 @@ const printReciept = async function () {
   var mywindow = window.open('', 'PRINT', 'height=400,width=600')
 
   mywindow.document.write('<html><head><title>' + document.title + '</title>')
-  mywindow.document.write('<style>@page { size: auto;  margin: 0mm; }</style>')
+  mywindow.document.write('<style>@page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>')
   mywindow.document.write('</head><body>')
   mywindow.document.write(document.getElementById('section-to-print').innerHTML)
   mywindow.document.write('</body></html>')
