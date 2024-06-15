@@ -121,8 +121,11 @@ const updateWash = async function (email: string) {
         </div>
 
         <div class="">
-          <h1 class="font-semibold">Plate Number</h1>
-          {{ subscriber.plate_number }}
+          <h1 class="font-semibold">Plate Number{{ subscriber.plate_number.length > 1 ? 's' : '' }}</h1>
+          <span class="" v-for="(plate, index) in subscriber.plate_number" :key="index">
+            {{ index !== 0 ? ', ' : '' }}
+            {{ plate }}
+          </span>
         </div>
 
         <div class="">

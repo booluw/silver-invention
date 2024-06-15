@@ -66,6 +66,7 @@ const onSubmit = form.handleSubmit(async (values) => {
   try {
     const { error } = await supabase.from('subscribers').insert({
       ...values,
+      plate_number: values.plate_number.split(','),
       wash_left: [3, 4].includes(values.package) ? amount[0].number_of_wash * values.duration : amount[0].number_of_wash,
       subscription_end: new Date(new Date().setDate(new Date().getDate() + (31 * values.duration )))
     })
@@ -191,7 +192,7 @@ onMounted(async () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField v-slot="{ componentField }" name="plate_number">
           <FormItem>
-            <FormLabel>Plate Number</FormLabel>
+            <FormLabel>Plate Numbers (Seperate with a comma)</FormLabel>
             <FormControl>
               <Input
                 type="text"

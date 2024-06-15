@@ -17,7 +17,7 @@ const router = useRouter()
 const route = useRoute()
 </script>
 <template>
-  <section class="!h-screen">
+  <section class="pb-[50px] md:pb:-0 md:!h-screen">
     <div class="flex gap-3 items-center">
       <CarWashIcon class="w-[40px]" />
       <h1 class="text-2xl font-bold">Services</h1>
