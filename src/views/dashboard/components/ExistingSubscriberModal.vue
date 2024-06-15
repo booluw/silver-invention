@@ -70,7 +70,7 @@ const updateWash = async function (email: string) {
 </script>
 <template>
   <section>
-    <h2 class="text-2xl">Existing Subscriber</h2>
+    <h2 class="text-2xl mb-5">Existing Subscriber</h2>
     <div class="" v-if="tab === 'search'">
       <form @submit="onSearch" class="mt-3">
         <FormField v-slot="{ componentField }" name="email">
@@ -141,19 +141,31 @@ const updateWash = async function (email: string) {
         </div>
 
         <div class="">
-          <h1 class="font-semibold">Wash Left</h1>
+          <h1 class="font-semibold" :class="{ 'text-red-500' : subscriber.wash_left === 0 }">Wash Left</h1>
           {{ subscriber.wash_left }}
         </div>
 
         <div class="">
-          <h1 class="font-semibold">Subscription Ends</h1>
+          <h1 class="font-semibold" :class="{ 'text-red-500' : new Date(subscriber.subscription_end).getTime() < new Date().getTime() }">
+            Subscription
+          {{ new Date(subscriber.subscription_end).getTime() < new Date().getTime() ? 'Expired' : 'Ends' }}
+          </h1>
           {{ formatDate(subscriber.subscription_end) }}
         </div>
       </div>
 
       <Button
         type="submit"
-        class="w-full mt-5"
+        class="w-full mt-10"
+        v-if="new Date(subscriber.subscription_end).getTime() < new Date().getTime() || subscriber.wash_left === 0"
+        @click="router.push(`?action=renew-subscription&id=${subscriber.email}`)"
+      >
+        Renew Subscription
+      </Button>
+      <Button
+        v-else
+        type="submit"
+        class="w-full mt-10"
         @click="updateWash(subscriber.email)"
         :disabled="loading"
       >

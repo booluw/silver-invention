@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 
 import { formatDate } from '../utils/functions'
 
+import logo from '@/assets/imgs/logo.jpg'
+
 const router = useRouter()
 const route = useRoute()
 const { toast: toaster } = useToast()
@@ -20,7 +22,7 @@ const printReciept = async function () {
 
   mywindow.document.write('<html><head><title>' + document.title + '</title>')
   mywindow.document.write(
-    '<style>@page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
+    '<style>* {-webkit-print-color-adjust: exact !important;} @page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
   )
   mywindow.document.write('</head><body>')
   mywindow.document.write(document.getElementById('section-to-print').innerHTML)
@@ -122,7 +124,7 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center">
-        <img src="@/assets/imgs/logo.jpg" width="100px" style="margin: 0 auto; border-radius: 5px;" />
+        <img :src="logo" width="100px" style="margin: 0 auto; border-radius: 5px;" />
         <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
@@ -141,21 +143,18 @@ onMounted(async () => await loadReciept())
       </div>
       <table style="width: 100%; margin: 20px 0 0" v-if="route.query.type === 'one-time-wash'">
         <tr style="border-bottom: 1px #eee solid">
-          <th>Cars</th>
           <th>Description</th>
           <th>Price</th>
           <th>Amount</th>
         </tr>
         <tr>
-          <td style="text-align: center">{{ reciept.number_of_cars! }}</td>
           <td style="text-align: center">{{ reciept.package.package_name }}</td>
           <td style="text-align: center">{{ formatCash(reciept.package.amount) }}</td>
           <td style="text-align: center">
-            {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
+            {{ formatCash(reciept.package.amount) }}
           </td>
         </tr>
         <tr style="border-top: 1px grey solid">
-          <td></td>
           <td></td>
           <td style="text-align: center">Total</td>
           <td style="text-align: center; font-weight: bold">

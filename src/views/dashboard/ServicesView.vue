@@ -9,6 +9,7 @@ import CarWashIcon from "./components/CarWash.vue"
 import OneTimeWashModal from './components/OneTimeWashModal.vue'
 import NewSubscriberModal from './components/NewSubscriberModal.vue'
 import ExistingSubscriberModal from './components/ExistingSubscriberModal.vue'
+import RenewSubscriptionModal from './components/RenewSubscriptionModal.vue'
 
 import RecieptModal from './components/RecieptModal.vue'
 
@@ -21,7 +22,7 @@ const route = useRoute()
       <CarWashIcon class="w-[40px]" />
       <h1 class="text-2xl font-bold">Services</h1>
     </div>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mt-5 py-3">
       <div class="border border-slate-500 p-5 rounded group hover:shadow-xl flex flex-col justify-between">
         <h3 class="font-semibold text-xl">One Time Wash</h3>
@@ -64,6 +65,12 @@ const route = useRoute()
       @done="router.push(route.path)"
       @close="router.push(route.path)"
       v-if="route.query.action === 'existing-subscriber'"
+    />
+    <AppModal
+      :child="RenewSubscriptionModal"
+      @done="router.push(route.path)"
+      @close="router.push(route.path)"
+      v-if="route.query.action === 'renew-subscription'"
     />
     <AppModal
       :child="RecieptModal"

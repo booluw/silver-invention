@@ -50,22 +50,8 @@ const formatCash = (money) => {
 
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
-  const amount = packages.value.filter(item => {
-    if (item.id === values.package) return item
-  })
-
-  toast('Add New One Time Wash',
-    {
-      description: `Add ${values.number_of_cars} cars for ${formatCash(values.number_of_cars*amount[0].amount)}`,
-      action: {
-        label: 'Continue',
-        onClick: () => addNewWash(values)
-      },
-      duration: 99999,
-      onDismiss: () => {
-        loading.value = false
-      }
-    })
+  
+  addNewWash(values)
 })
 
 const addNewWash = async function (values) {
