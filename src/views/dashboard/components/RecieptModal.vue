@@ -131,7 +131,7 @@ onMounted(async () => await loadReciept())
           <p>0811-845-2796</p>
         </div>
         <div
-          style="display: flex; justify-content: space-between; margin: 15px 0 0; font-size: 12px"
+          style="text-align: left; margin: 15px 0;"
         >
           <div v-if="route.query.type === 'one-time-wash'">INVOICE: OTW{{ reciept.id! }}</div>
           <div>

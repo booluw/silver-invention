@@ -29,11 +29,11 @@ const { toast: toaster } = useToast()
 const loading = ref(false)
 const packageLoading = ref(false)
 const packages: Ref<any[]> = ref([])
+const plate_numbers: Ref<[]> = ref([])
 
 const formSchema = toTypedSchema(
   z.object({
     email: z.string().min(2).max(50).email('Please provide a valid email'),
-    plate_number: z.string().min(3),
     number_of_cars: z.number(),
     package: z.number(),
     customer_name: z.string(),
@@ -66,7 +66,7 @@ const onSubmit = form.handleSubmit(async (values) => {
   try {
     const { error } = await supabase.from('subscribers').insert({
       ...values,
-      plate_number: values.plate_number.split(','),
+      plate_number: plate_numbers.value,
       wash_left: [3, 4].includes(values.package) ? amount[0].number_of_wash * values.duration : amount[0].number_of_wash,
       subscription_end: new Date(new Date().setDate(new Date().getDate() + (31 * values.duration )))
     })
@@ -189,37 +189,34 @@ onMounted(async () => {
         </FormField>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField v-slot="{ componentField }" name="plate_number">
-          <FormItem>
-            <FormLabel>Plate Numbers (Seperate with a comma)</FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Plate Number"
-                v-bind="componentField"
-                class="text-black"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-
-        <FormField v-slot="{ componentField }" name="number_of_cars">
-          <FormItem>
-            <FormLabel>Number of Cars</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                placeholder="Number of Cars"
-                v-bind="componentField"
-                class="text-black"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-      </div>
+      <FormField v-slot="{ componentField }" name="number_of_cars">
+        <FormItem>
+          <FormLabel>Number of Cars</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              placeholder="Number of Cars"
+              v-bind="componentField"
+              class="text-black"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+        <div class="grid grid-cols-3 mt-2 gap-3">
+          <div 
+            v-for="index in componentField.modelValue"
+            :key="index"
+          >
+            <FormLabel>Plate Number {{ index }}</FormLabel>
+            <Input
+              type="text"
+              v-model="plate_numbers[index]"
+              placeholder="Plate Number"
+              class="text-black"
+            />
+          </div>
+        </div>
+      </FormField>
 
       <Button type="submit" class="w-full mt-5" :disabled="loading">
         <svg
