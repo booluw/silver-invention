@@ -32,8 +32,8 @@ const { toast: toaster } = useToast()
 const loading = ref(false)
 const packageLoading = ref(false)
 const packages: Ref<any[]> = ref([])
-
 const plate_numbers: Ref<[]> = ref([])
+const allowedCars: Ref<number> = ref(0)
 
 const formSchema = toTypedSchema(
   z.object({
@@ -61,6 +61,8 @@ const onSubmit = form.handleSubmit(async (values) => {
     toast('Number of cars exceeded for this package', {
       description: `${amount[0].package_name} allows only ${amount[0].max_number_of_cars}`
     })
+    allowedCars.value = amount[0].max_number_of_cars
+    plate_numbers.value = []
     loading.value = false
     return
   }
@@ -70,7 +72,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       .from('subscribers')
       .update({
         ...values,
-        plate_number: plate_numbers.value,
+        plate_number: plate_numbers.value.filter(item => { if(item !== null) return item }),
         duration: Number(values.duration),
         wash_left: [3, 4].includes(values.package)
           ? amount[0].number_of_wash * Number(values.duration)
@@ -81,7 +83,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
     if (error) throw error
 
-    toast('New Subscriber Added', { description: '' })
+    toast('Subscription Renewed', { description: '' })
     router.push(`?action=reciept&id=${props.subscriber.email}&type=existing-subscriber`)
   } catch (error) {
     console.log(error)
@@ -170,31 +172,34 @@ onMounted(async () => {
       </FormField>
     </div>
 
-    <FormField v-slot="{ componentField }" name="number_of_cars">
-      <FormItem>
-        <FormLabel>Number of Cars</FormLabel>
-        <FormControl>
-          <Input
-            type="number"
-            placeholder="Number of Cars"
-            v-bind="componentField"
-            class="text-black"
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-      <div class="grid grid-cols-3 mt-2 gap-3">
-        <div v-for="index in componentField.modelValue" :key="index">
-          <FormLabel>Plate Number {{ index }}</FormLabel>
-          <Input
-            type="text"
-            v-model="plate_numbers[index]"
-            placeholder="Plate Number"
-            class="text-black"
-          />
+    <FormField v-slot="{ componentField }" name="number_of_cars" v-model:model-value="allowedCars">
+        <FormItem>
+          <FormLabel>Number of Cars</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              placeholder="Number of Cars"
+              v-bind="componentField"
+              class="text-black"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+        <div class="grid grid-cols-3 mt-2 gap-3">
+          <div 
+            v-for="index in allowedCars"
+            :key="index"
+          >
+            <FormLabel>Plate Number {{ index }}</FormLabel>
+            <Input
+              type="text"
+              v-model="plate_numbers[index]"
+              placeholder="Plate Number"
+              class="text-black"
+            />
+          </div>
         </div>
-      </div>
-    </FormField>
+      </FormField>
 
     <Button type="submit" class="w-full mt-5" :disabled="loading" @click="onSubmit">
       <svg

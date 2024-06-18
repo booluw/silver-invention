@@ -175,7 +175,11 @@ onMounted(async () => await loadReciept())
       </div>
       <hr />
       <br />
-      <b>Note: Keep Receipt for car collection</b>
+      <b>NOTE:</b>
+      <ul>
+        <li>Save the reciept to pickup your car</li>
+        <li>Without a reciept, no car will be released</li>
+      </ul>
       <br /><br />
       <p>THANK YOU FOR YOUR PATRONAGE</p>
       <p>NO REFUND</p>

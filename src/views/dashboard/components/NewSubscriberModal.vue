@@ -30,6 +30,7 @@ const loading = ref(false)
 const packageLoading = ref(false)
 const packages: Ref<any[]> = ref([])
 const plate_numbers: Ref<[]> = ref([])
+const allowedCars: Ref<number> = ref(0)
 
 const formSchema = toTypedSchema(
   z.object({
@@ -37,7 +38,7 @@ const formSchema = toTypedSchema(
     number_of_cars: z.number(),
     package: z.number(),
     customer_name: z.string(),
-    duration: z.number()
+    duration: z.string()
   })
 )
 
@@ -59,6 +60,8 @@ const onSubmit = form.handleSubmit(async (values) => {
     toast('Number of cars exceeded for this package', {
       description: `${amount[0].package_name} allows only ${amount[0].max_number_of_cars}`
     })
+    allowedCars.value = amount[0].max_number_of_cars
+    plate_numbers.value = []
     loading.value = false
     return
   }
@@ -66,9 +69,10 @@ const onSubmit = form.handleSubmit(async (values) => {
   try {
     const { error } = await supabase.from('subscribers').insert({
       ...values,
-      plate_number: plate_numbers.value,
-      wash_left: [3, 4].includes(values.package) ? amount[0].number_of_wash * values.duration : amount[0].number_of_wash,
-      subscription_end: new Date(new Date().setDate(new Date().getDate() + (31 * values.duration )))
+      duration: Number(values.duration),
+      plate_number: plate_numbers.value.filter(item => { if(item !== null) return item }),
+      wash_left: [3, 4].includes(values.package) ? amount[0].number_of_wash * Number(values.duration) : amount[0].number_of_wash,
+      subscription_end: new Date(new Date().setDate(new Date().getDate() + (31 * Number(values.duration) )))
     })
 
     if (error) throw error
@@ -177,9 +181,9 @@ onMounted(async () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem :value="1"> 1 Month </SelectItem>
-                    <SelectItem :value="3"> 3 Months </SelectItem>
-                    <SelectItem :value="6"> 6 Months </SelectItem>
+                    <SelectItem value="1"> 1 Month </SelectItem>
+                    <SelectItem value="3"> 3 Months </SelectItem>
+                    <SelectItem value="6"> 6 Months </SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -189,7 +193,7 @@ onMounted(async () => {
         </FormField>
       </div>
 
-      <FormField v-slot="{ componentField }" name="number_of_cars">
+      <FormField v-slot="{ componentField }" name="number_of_cars" v-model:model-value="allowedCars">
         <FormItem>
           <FormLabel>Number of Cars</FormLabel>
           <FormControl>
@@ -204,7 +208,7 @@ onMounted(async () => {
         </FormItem>
         <div class="grid grid-cols-3 mt-2 gap-3">
           <div 
-            v-for="index in componentField.modelValue"
+            v-for="index in allowedCars"
             :key="index"
           >
             <FormLabel>Plate Number {{ index }}</FormLabel>
