@@ -22,7 +22,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast/use-toast'
 
-
 const router = useRouter()
 
 const emit = defineEmits(['done', 'close'])
@@ -30,10 +29,11 @@ const { toast: toaster } = useToast()
 const loading = ref(false)
 const packageLoading = ref(false)
 const packages: Ref<any[]> = ref([])
+const currentUser: Ref<{}> = ref({})
 
 const formSchema = toTypedSchema(
   z.object({
-    email: z.string().min(2).max(50).email('Please provide a valid email'),
+    email: z.string().email('Please provide a valid email'),
     plate_number: z.string().min(3),
     package: z.number(),
     customer_name: z.string()
@@ -48,9 +48,26 @@ const formatCash = (money) => {
   return '₦' + Intl.NumberFormat().format(money)
 }
 
+const searchUser = async function (email) {
+  console.log(email)
+  try {
+    const { data, error } = await supabase
+      .from('one-time-wash')
+      .select('customer_name, email')
+      .eq('email', email)
+
+    if (error) throw error
+
+    console.log(data)
+    currentUser.value = data[0]
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
-  
+
   addNewWash(values)
 })
 
@@ -58,12 +75,15 @@ const addNewWash = async function (values) {
   loading.value = true
 
   try {
-    const { data, error } = await supabase.from('one-time-wash').insert({ ...values }).select('*')
+    const { data, error } = await supabase
+      .from('one-time-wash')
+      .insert({ ...values })
+      .select('*')
 
     if (error) throw error
 
     router.push(`?action=reciept&id=${data[0].id}&type=one-time-wash`)
-  } catch(error) {
+  } catch (error) {
     console.log(error)
   }
 
@@ -77,7 +97,6 @@ const fetchPackages = async function () {
 
     if (error) throw error
     packages.value = data
-
   } catch (error) {
     console.log(error)
     toaster({
@@ -93,7 +112,6 @@ const fetchPackages = async function () {
   packageLoading.value = false
 }
 
-
 onMounted(async () => {
   await fetchPackages()
 })
@@ -102,23 +120,43 @@ onMounted(async () => {
   <section class="">
     <h2 class="text-2xl">One Time Wash</h2>
     <form @submit="onSubmit" class="mt-3">
-      <FormField v-slot="{ componentField }" name="customer_name">
+      <FormField v-slot="{ componentField }" name="email" class="flex">
+        <div class="flex items-end gap-5">
+          <FormItem class="w-full">
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="user@email.com"
+                v-bind="componentField"
+                class="text-black"
+                v-model="currentUser.email"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+
+          <Button
+            class="w-[100px] bg-black/20 border-black/40 text-black"
+            type="button"
+            variant="outline"
+            @click="searchUser(componentField.modelValue)"
+          >
+            Search
+          </Button>
+        </div>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="customer_name" v-model:model-value="currentUser.customer_name">
         <FormItem>
           <FormLabel>Customer Name</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="John Doe" v-bind="componentField" class="text-black" />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
-      <FormField v-slot="{ componentField }" name="email">
-        <FormItem>
-          <FormLabel>Email</FormLabel>
-          <FormControl>
             <Input
               type="text"
-              placeholder="user@email.com"
+              placeholder="John Doe"
+              :model-value="currentUser.customer_name"
+              :default-value="currentUser.customer_name"
+              :value="currentUser.customer_name"
               v-bind="componentField"
               class="text-black"
             />
@@ -126,6 +164,7 @@ onMounted(async () => {
           <FormMessage />
         </FormItem>
       </FormField>
+
       <FormField v-slot="{ componentField }" name="plate_number">
         <FormItem>
           <FormLabel>Plate Number</FormLabel>
@@ -140,6 +179,7 @@ onMounted(async () => {
           <FormMessage />
         </FormItem>
       </FormField>
+
       <FormField v-slot="{ componentField }" name="package">
         <FormItem>
           <FormLabel>Package</FormLabel>
@@ -161,6 +201,7 @@ onMounted(async () => {
           <FormMessage />
         </FormItem>
       </FormField>
+
       <Button type="submit" class="w-full mt-5" :disabled="loading">
         <svg
           v-if="loading"

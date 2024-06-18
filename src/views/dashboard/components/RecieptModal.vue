@@ -157,7 +157,10 @@ onMounted(async () => await loadReciept())
         <tr style="border-top: 1px grey solid">
           <td></td>
           <td style="text-align: center">Total</td>
-          <td style="text-align: center; font-weight: bold">
+          <td style="text-align: center; font-weight: bold" v-if="route.query.type === 'one-time-wash'">
+            {{ formatCash(reciept.package.amount) }}
+          </td>
+          <td style="text-align: center; font-weight: bold" v-else>
             {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
           </td>
         </tr>
@@ -171,6 +174,8 @@ onMounted(async () => await loadReciept())
         <br /><br />
       </div>
       <hr />
+      <br />
+      <b>Note: Keep Receipt for car collection</b>
       <br /><br />
       <p>THANK YOU FOR YOUR PATRONAGE</p>
       <p>NO REFUND</p>
