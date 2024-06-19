@@ -22,7 +22,7 @@ const printReciept = async function () {
 
   mywindow.document.write('<html><head><title>' + document.title + '</title>')
   mywindow.document.write(
-    '<style>* {-webkit-print-color-adjust: exact !important;} @page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
+    '<style>* {-webkit-print-color-adjust: exact !important; margin: 0; padding: 0;} @page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
   )
   mywindow.document.write('</head><body>')
   mywindow.document.write(document.getElementById('section-to-print').innerHTML)
@@ -124,14 +124,15 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center">
-        <logoVue width="100px" height="auto" style="margin: 0 auto; border-radius: 5px;" />
-        <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
+        <logoVue width="50px" height="auto" style="margin: 5px auto 0; border-radius: 5px;" class="w-[100px]" />
+        <h1 class="!text-2xl" style="font-size: 20px; font-weight: bold; margin: 0;">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
           <p>0811-845-2796</p>
         </div>
         <div
-          style="text-align: left; margin: 15px 0;"
+          style="text-align: left; margin: 10px;"
+          class="!m-0"
         >
           <div v-if="route.query.type === 'one-time-wash'">INVOICE: OTW{{ reciept.id! }}</div>
           <div>
@@ -141,7 +142,7 @@ onMounted(async () => await loadReciept())
           <div>Printed: {{ formatDate(Date()) }}</div>
         </div>
       </div>
-      <table style="width: 100%; margin: 20px 0 0" v-if="route.query.type === 'one-time-wash'">
+      <table style="width: 100%; margin: 10px 0 0;" v-if="route.query.type === 'one-time-wash'">
         <tr style="border-bottom: 1px #eee solid">
           <th>Description</th>
           <th>Price</th>
@@ -149,16 +150,16 @@ onMounted(async () => await loadReciept())
         </tr>
         <tr>
           <td style="text-align: center">{{ reciept.package.package_name }}</td>
-          <td style="text-align: center">{{ formatCash(reciept.package.amount) }}</td>
+          <td style="text-align: center">{{ formatCash(reciept.package.one_time_wash_amount) }}</td>
           <td style="text-align: center">
-            {{ formatCash(reciept.package.amount) }}
+            {{ formatCash(reciept.package.one_time_wash_amount) }}
           </td>
         </tr>
         <tr style="border-top: 1px grey solid">
           <td></td>
           <td style="text-align: center">Total</td>
           <td style="text-align: center; font-weight: bold" v-if="route.query.type === 'one-time-wash'">
-            {{ formatCash(reciept.package.amount) }}
+            {{ formatCash(reciept.package.one_time_wash_amount) }}
           </td>
           <td style="text-align: center; font-weight: bold" v-else>
             {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
@@ -174,15 +175,15 @@ onMounted(async () => await loadReciept())
         <br /><br />
       </div>
       <hr />
-      <br />
-      <b>NOTE:</b>
-      <ul>
-        <li>Save the reciept to pickup your car</li>
-        <li>Without a reciept, no car will be released</li>
-      </ul>
-      <br /><br />
-      <p>THANK YOU FOR YOUR PATRONAGE</p>
-      <p>NO REFUND</p>
+      <div style="margin: 10px 10px 0;">
+        <b>NOTE:</b>
+        <ul style="margin: 0 0 10px;">
+          <li>Save the reciept to pickup your car</li>
+          <li>Without a reciept, no car will be released</li>
+        </ul>
+        <p>THANK YOU FOR YOUR PATRONAGE</p>
+        <p>NO REFUND</p>
+      </div>
     </div>
   </section>
 </template>
