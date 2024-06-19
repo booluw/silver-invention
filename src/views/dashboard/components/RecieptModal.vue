@@ -124,7 +124,7 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center">
-        <logoVue width="100px" style="margin: 0 auto; border-radius: 5px;" />
+        <logoVue width="100px" height="auto" style="margin: 0 auto; border-radius: 5px;" />
         <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
