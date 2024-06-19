@@ -58,7 +58,13 @@ const searchUser = async function (email) {
 
     if (error) throw error
 
-    console.log(data)
+    if (data.length === 0) {
+      toast('No user found!', {
+        description: `${email} has not been added in the database as a One Time Wash customer`
+      })
+      return;
+    }
+
     currentUser.value = data[0]
   } catch (error) {
     console.log(error)

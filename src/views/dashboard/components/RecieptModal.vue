@@ -6,9 +6,9 @@ import { supabase } from '@/config/supabase'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { Button } from '@/components/ui/button'
 
-import { formatDate } from '../utils/functions'
+import logoVue from '@/components/icons/logo.vue'
 
-import logo from '@/assets/imgs/logo.jpg'
+import { formatDate } from '../utils/functions'
 
 const router = useRouter()
 const route = useRoute()
@@ -124,7 +124,7 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center">
-        <img :src="logo" width="100px" style="margin: 0 auto; border-radius: 5px;" />
+        <logoVue width="100px" style="margin: 0 auto; border-radius: 5px;" />
         <h1 class="text-2xl">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
