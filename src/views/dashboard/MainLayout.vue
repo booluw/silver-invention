@@ -68,7 +68,7 @@ const signUserOut = async function () {
         class="p-5 bg-gray-800 sticky top-0 z-10 flex items-center justify-between text-white"
       >
         <h1 class="text-xs">
-          Welcome, <b>{{ user.fullname! ?? user.email! }}</b>
+          Welcome, <b>{{ user.fullname! ?? user.email! }}</b> 
         </h1>
         <Button
           type="button"

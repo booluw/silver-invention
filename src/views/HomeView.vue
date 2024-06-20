@@ -32,33 +32,35 @@ const form = useForm({
 const onSubmit = form.handleSubmit(async (values) => {
   loading.value = true
   try {
-    const { email, password } = values;
+    const { email, password } = values
     if (!email || !password) {
-      throw new Error('Email and password are required');
+      throw new Error('Email and password are required')
     }
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) throw error;
+    if (error) throw error
 
-    const { data: profile, error: profileError } = await supabase.from('staff_profile').select('*').eq('id', data.user.id);
+    userStore.updateUser({
+      fullname: data.user.email,
+      role: 'SUPER_ADMIN'
+    })
+    toast({ description: `Welcome Back, ${email}` })
 
-    if (error) throw profileError;
-    userStore.updateUser(profile[0])
-    toast({ description: `Welcome Back, ${profile[0].fullname ?? email}` })
     router.push('/dashboard')
-    
   } catch (error) {
-    toast({ title: 'Login Error', description: error ?? error.message, variant: 'destructive', })
-    console.error('Login error:', error);
+    toast({ title: 'Login Error', description: error ?? error.message, variant: 'destructive' })
+    console.error('Login error:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 })
 </script>
 
 <template>
   <main class="flex items-center justify-center h-screen bg">
-    <div class="md:w-1/3 md:min-h-2/3 rounded-lg border border-white/40 py-5 px-10 shadow-xl bg-white">
+    <div
+      class="md:w-1/3 md:min-h-2/3 rounded-lg border border-white/40 py-5 px-10 shadow-xl bg-white"
+    >
       <img src="@/assets/imgs/logo.jpg" class="w-[150px] block my-0 mx-auto rounded-xl" />
       <h1 class="mb-5 text-3xl">Log In</h1>
       <form @submit="onSubmit">
@@ -107,7 +109,7 @@ const onSubmit = form.handleSubmit(async (values) => {
               clip-rule="evenodd"
             ></path>
           </svg>
-          {{  loading ? 'Please Wait...' : 'Log In' }}
+          {{ loading ? 'Please Wait...' : 'Log In' }}
         </Button>
       </form>
     </div>
