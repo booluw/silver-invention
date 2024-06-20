@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/toast/use-toast'
 
@@ -36,7 +38,8 @@ const formSchema = toTypedSchema(
     email: z.string().email('Please provide a valid email'),
     plate_number: z.string().min(3),
     package: z.number(),
-    customer_name: z.string()
+    customer_name: z.string(),
+    car_type: z.enum(['SUV', 'SALOON']).default('SUV')
   })
 )
 
@@ -62,7 +65,7 @@ const searchUser = async function (email) {
       toast('No user found!', {
         description: `${email} has not been added in the database as a One Time Wash customer`
       })
-      return;
+      return
     }
 
     currentUser.value = data[0]
@@ -153,7 +156,11 @@ onMounted(async () => {
         </div>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="customer_name" v-model:model-value="currentUser.customer_name">
+      <FormField
+        v-slot="{ componentField }"
+        name="customer_name"
+        v-model:model-value="currentUser.customer_name"
+      >
         <FormItem>
           <FormLabel>Customer Name</FormLabel>
           <FormControl>
@@ -198,13 +205,36 @@ onMounted(async () => {
                 <SelectGroup>
                   <SelectLabel>Packages</SelectLabel>
                   <SelectItem :value="plan.id" v-for="(plan, index) in packages" :key="index">
-                    {{ plan.package_name }} - {{ formatCash(plan.one_time_wash_amount) }}
+                    {{ plan.package_name }} - [SALOON -
+                    {{ formatCash(plan.one_time_wash_amount) }} | SUV -
+                    {{ formatCash(plan.one_time_wash_suv_amount) }}]
                   </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </FormControl>
           <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" type="radio" name="car_type">
+        <FormItem class="space-y-3">
+          <FormLabel>Car Type</FormLabel>
+          <FormControl>
+            <RadioGroup default-value="comfortable" v-bind="componentField">
+              <FormItem class="flex items-center space-y-0 gap-x-3">
+                <FormControl>
+                  <RadioGroupItem id="r1" value="SUV" />
+                  <Label for="r1">SUV</Label>
+                </FormControl>
+                <div class="mr-3" />
+                <FormControl>
+                  <RadioGroupItem id="r2" value="SALOON" />
+                  <Label for="r2">Saloon</Label>
+                </FormControl>
+              </FormItem>
+            </RadioGroup>
+          </FormControl>
         </FormItem>
       </FormField>
 

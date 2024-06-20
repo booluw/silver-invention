@@ -22,7 +22,7 @@ const printReciept = async function () {
 
   mywindow.document.write('<html><head><title>' + document.title + '</title>')
   mywindow.document.write(
-    '<style>* {-webkit-print-color-adjust: exact !important; margin: 0; padding: 0;} @page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
+    '<style>* {-webkit-print-color-adjust: exact !important; margin: 0; padding: 0;} .printer-hide{display:none} @page { size: auto!important;  margin: 0mm!important; -webkit-print-color-adjust: exact !important; }</style>'
   )
   mywindow.document.write('</head><body>')
   mywindow.document.write(document.getElementById('section-to-print').innerHTML)
@@ -124,7 +124,7 @@ onMounted(async () => await loadReciept())
     </div>
     <div class="h-full" id="section-to-print" v-else>
       <div style="text-align: center">
-        <logoVue width="50px" height="auto" style="margin: 5px auto 0; border-radius: 5px;" class="w-[100px]" />
+        <logoVue width="50px" height="auto" style="margin: 5px auto 0; border-radius: 5px;" class="w-[100px] printer-hide" />
         <h1 class="!text-2xl" style="font-size: 20px; font-weight: bold; margin: 0;">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
@@ -142,30 +142,35 @@ onMounted(async () => await loadReciept())
           <div>Printed: {{ formatDate(Date()) }}</div>
         </div>
       </div>
+
       <table style="width: 100%; margin: 10px 0 0;" v-if="route.query.type === 'one-time-wash'">
         <tr style="border-bottom: 1px #eee solid">
           <th>Description</th>
+          <th>Car Type</th>
           <th>Price</th>
           <th>Amount</th>
         </tr>
         <tr>
           <td style="text-align: center">{{ reciept.package.package_name }}</td>
-          <td style="text-align: center">{{ formatCash(reciept.package.one_time_wash_amount) }}</td>
+          <td style="text-align: center">{{  reciept.car_type }}</td>
+          <td style="text-align: center">{{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}</td>
           <td style="text-align: center">
-            {{ formatCash(reciept.package.one_time_wash_amount) }}
+            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}
           </td>
         </tr>
         <tr style="border-top: 1px grey solid">
           <td></td>
+          <td></td>
           <td style="text-align: center">Total</td>
           <td style="text-align: center; font-weight: bold" v-if="route.query.type === 'one-time-wash'">
-            {{ formatCash(reciept.package.one_time_wash_amount) }}
+            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}
           </td>
           <td style="text-align: center; font-weight: bold" v-else>
             {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
           </td>
         </tr>
       </table>
+      
       <div v-else>
         <b>Subscription package:</b> {{ reciept.package.package_name }}
         <br />
