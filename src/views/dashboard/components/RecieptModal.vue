@@ -6,8 +6,6 @@ import { supabase } from '@/config/supabase'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { Button } from '@/components/ui/button'
 
-import logoVue from '@/components/icons/logo.vue'
-
 import { formatDate } from '../utils/functions'
 
 const router = useRouter()
@@ -122,10 +120,9 @@ onMounted(async () => await loadReciept())
         ></path>
       </svg>
     </div>
-    <div class="h-full" id="section-to-print" v-else>
+    <div class="h-full mt-3" id="section-to-print" v-else>
       <div style="text-align: center">
-        <logoVue width="50px" height="auto" style="margin: 5px auto 0; border-radius: 5px;" class="w-[100px] printer-hide" />
-        <h1 class="!text-2xl" style="font-size: 20px; font-weight: bold; margin: 0;">Gleamwave Detailing Studio</h1>
+        <h1 class="!text-2xl" style="font-size: 20px; font-weight: 500; margin: 0;">Gleamwave Detailing Studio</h1>
         <div style="font-size: 14px">
           <p>No. 225 Abak Road, Uyo, Akwa Ibom</p>
           <p>0811-845-2796</p>
@@ -153,9 +150,9 @@ onMounted(async () => await loadReciept())
         <tr>
           <td style="text-align: center">{{ reciept.package.package_name }}</td>
           <td style="text-align: center">{{  reciept.car_type }}</td>
-          <td style="text-align: center">{{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}</td>
+          <td style="text-align: center">{{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_saloon : reciept.package.one_time_wash_suv) }}</td>
           <td style="text-align: center">
-            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}
+            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_saloon : reciept.package.one_time_wash_suv) }}
           </td>
         </tr>
         <tr style="border-top: 1px grey solid">
@@ -163,10 +160,10 @@ onMounted(async () => await loadReciept())
           <td></td>
           <td style="text-align: center">Total</td>
           <td style="text-align: center; font-weight: bold" v-if="route.query.type === 'one-time-wash'">
-            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_amount : reciept.package.one_time_wash_suv_amount) }}
+            {{ formatCash(reciept.car_type === 'SALOON' ? reciept.package.one_time_wash_saloon : reciept.package.one_time_wash_suv) }}
           </td>
           <td style="text-align: center; font-weight: bold" v-else>
-            {{ formatCash(reciept.package.amount * reciept.number_of_cars) }}
+            {{ formatCash(reciept.package.amount_for_subscription * reciept.number_of_cars) }}
           </td>
         </tr>
       </table>

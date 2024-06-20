@@ -206,8 +206,8 @@ onMounted(async () => {
                   <SelectLabel>Packages</SelectLabel>
                   <SelectItem :value="plan.id" v-for="(plan, index) in packages" :key="index">
                     {{ plan.package_name }} - [SALOON -
-                    {{ formatCash(plan.one_time_wash_amount) }} | SUV -
-                    {{ formatCash(plan.one_time_wash_suv_amount) }}]
+                    {{ formatCash(plan.one_time_wash_saloon) }} | SUV -
+                    {{ formatCash(plan.one_time_wash_suv) }}]
                   </SelectItem>
                 </SelectGroup>
               </SelectContent>
